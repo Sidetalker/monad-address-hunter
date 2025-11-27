@@ -10,6 +10,7 @@ import sys
 from typing import Iterable, List, Sequence, Tuple
 
 from eth_keys import keys
+from eth_hash.auto import keccak
 
 
 def normalize_prefix(prefix: str) -> str:
@@ -34,6 +35,17 @@ def generate_wallet() -> Tuple[keys.PrivateKey, str]:
     private_key = keys.PrivateKey(secrets.token_bytes(32))
     address = private_key.public_key.to_address().lower()
     return private_key, address
+
+
+def ensure_keccak_backend() -> None:
+    try:
+        keccak(b"")
+    except ImportError:
+        sys.stderr.write(
+            "Keccak hashing backend is missing. Install with\n"
+            "  pip install 'eth-hash[pycryptodome]'\n"
+        )
+        raise
 
 
 def find_vanity_match(
@@ -95,6 +107,11 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv if argv is not None else sys.argv[1:])
+
+    try:
+        ensure_keccak_backend()
+    except ImportError:
+        return 1
 
     try:
         prefixes = normalize_prefixes(args.prefixes)

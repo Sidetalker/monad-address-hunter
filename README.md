@@ -4,7 +4,7 @@ A small terminal tool that brute-forces Monad-compatible EVM addresses until one
 
 ## Setup
 
-Install dependencies (Python 3.10+ recommended):
+Install dependencies (Python 3.10+ recommended). The requirements include a Keccak backend via `eth-hash[pycryptodome]` so address generation works out of the box:
 
 ```bash
 pip install -r requirements.txt
